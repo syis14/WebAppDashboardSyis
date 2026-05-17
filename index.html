@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KKM Apps Script Dashboard Prompt Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .glass { backdrop-filter: blur(18px); background: rgba(255,255,255,0.88); }
+    .soft-scroll::-webkit-scrollbar { width: 8px; }
+    .soft-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
+    select, textarea, input[type='text'] { background: white; }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100">
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute -top-24 -left-20 h-72 w-72 rounded-full bg-emerald-500/20 blur-3xl"></div>
+    <div class="absolute top-40 right-0 h-96 w-96 rounded-full bg-cyan-500/20 blur-3xl"></div>
+    <div class="absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-indigo-500/10 blur-3xl"></div>
+  </div>
+
+  <main class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <header class="mb-8">
+      <div class="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-4 py-2 text-sm text-emerald-200 mb-4">
+        <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
+        KKM Dashboard Prompt Builder • Google Apps Script Web App
+      </div>
+      <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+        <div>
+          <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">KKM Apps Script Dashboard Prompt Generator</h1>
+          <p class="mt-3 text-slate-300 max-w-3xl">Generate a complete professional prompt for creating KKM-style dashboards using Google Sheets, Apps Script, HTML, Chart.js, Tailwind CSS, and optional Leaflet maps.</p>
+        </div>
+        <button onclick="resetForm()" class="rounded-xl border border-white/15 px-4 py-2 text-sm font-semibold text-slate-200 hover:bg-white/10 transition">Reset</button>
+      </div>
+    </header>
+
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <aside class="lg:col-span-5 xl:col-span-4">
+        <div class="glass rounded-3xl border border-white/10 shadow-2xl p-5 text-slate-900">
+          <h2 class="text-xl font-bold text-slate-950">Dashboard Builder Settings</h2>
+          <p class="text-sm text-slate-600 mt-1">Select the dashboard use case, data source, design, features, and deployment needs.</p>
+
+          <div class="mt-5 space-y-4">
+            <div>
+              <label class="block text-sm font-semibold mb-1">KKM Dashboard Type</label>
+              <select id="dashboardType" class="w-full rounded-xl border-slate-300 focus:border-emerald-500 focus:ring-emerald-500">
+                <option>eNotifikasi Infectious Disease Surveillance Dashboard</option>
+                <option>HFMD Institutional Surveillance Dashboard</option>
+                <option>Dengue Locality Action Dashboard</option>
+                <option>Food Poisoning Outbreak Investigation Dashboard</option>
+                <option>TB Diagnosis Delay and Contact Screening Dashboard</option>
+                <option>CPRC Daily Situation / Crisis Monitoring Dashboard</option>
+                <option>Immunisation Coverage and Defaulter Dashboard</option>
+                <option>NCD Clinic Control Dashboard</option>
+                <option>Maternal and Child Health High-Risk Dashboard</option>
+                <option>Emergency Department Throughput Dashboard</option>
+                <option>Clinic Operations / Revenue / Roster Dashboard</option>
+                <option>Training / Webinar Feedback Dashboard</option>
+                <option>Research / Thesis Results Dashboard</option>
+                <option>Audit / Quality Improvement Indicator Dashboard</option>
+                <option>Environmental Health Inspection Dashboard</option>
+                <option>Vector Control Operations Dashboard</option>
+                <option>Disaster / CBRNe Response Dashboard</option>
+                <option>Custom KKM Dashboard</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold mb-1">Data Input Type</label>
+              <select id="inputType" class="w-full rounded-xl border-slate-300 focus:border-emerald-500 focus:ring-emerald-500">
+                <option>Google Sheets linked to Apps Script</option>
+                <option>Google Form responses in Google Sheets</option>
+                <option>Excel / CSV imported into Google Sheets</option>
+                <option>Manual pasted table converted into Google Sheets</option>
+                <option>Multiple Google Sheet tabs merged into one dashboard</option>
+                <option>External API endpoint returning JSON</option>
+                <option>Static JSON stored in Apps Script</option>
+              </select>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-sm font-semibold mb-1">Dashboard Behaviour</label>
+                <select id="behaviour" class="w-full rounded-xl border-slate-300 focus:border-emerald-500 focus:ring-emerald-500">
+                  <option>Dynamic dashboard updated from Google Sheets on page load</option>
+                  <option>Static one-time dashboard</option>
+                  <option>Near real-time dashboard with auto-refresh</option>
+                  <option>Upload-based dashboard</option>
+                  <option>Google Form-linked live dashboard</option>
+                  <option>Executive summary dashboard only</option>
+                  <option>Operational line-list dashboard</option>
+                  <option>Executive + operational hybrid dashboard</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-semibold mb-1">Prompt Level</label>
+                <select id="promptLevel" class="w-full rounded-xl border-slate-300 focus:border-emerald-500 focus:ring-emerald-500">
+                  <option>Beginner friendly with full step-by-step instructions</option>
+                  <option>Advanced developer prompt with modular code</option>
+                  <option>Debug existing Apps Script dashboard</option>
+                  <option>Enhance existing dashboard UI and logic</option>
+                  <option>Executive interpretation and weekly summary prompt</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold mb-1">Design Style</label>
+              <select id="theme" class="w-full rounded-xl border-slate-300 focus:border-emerald-500 focus:ring-emerald-500">
+                <option>KKM Corporate Clean — white, blue, teal, official meeting style</option>
+                <option>CPRC Command Centre — dark navy, alert badges, map-first layout</option>
+                <option>Minimal Clinical White — clean, calm, clinic-friendly layout</option>
+                <option>Dark Epidemiology Intelligence — slate, emerald, cyan, surveillance style</option>
+                <option>Modern Glassmorphism — premium webinar/demo style</option>
+                <option>Executive Boardroom — polished KPI-first management dashboard</option>
+                <option>Mobile-first Field Dashboard — simple, large buttons, fast loading</option>
+                <option>Looker Studio Inspired — simple reporting dashboard layout</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold mb-1">Google Sheet / Dataset Context</label>
+              <textarea id="datasetContext" rows="4" placeholder="Example: Spreadsheet ID, sheet name, column names, date fields, status fields, latitude/longitude fields, disease/facility/mukim/district variables, sample rows..." class="w-full rounded-xl border-slate-300 focus:border-emerald-500 focus:ring-emerald-500"></textarea>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold mb-1">Main Dashboard Objective</label>
+              <textarea id="objective" rows="3" placeholder="Example: Monitor weekly HFMD notifications, institutional clusters, delayed registration, mukim distribution, top diagnoses, and operational line-listing." class="w-full rounded-xl border-slate-300 focus:border-emerald-500 focus:ring-emerald-500"></textarea>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold mb-2">Dashboard Components</label>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3 bg-white/75"><input id="kpi" type="checkbox" checked class="rounded text-emerald-600 focus:ring-emerald-500"> KPI cards</label>
+                <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3 bg-white/75"><input id="charts" type="checkbox" checked class="rounded text-emerald-600 focus:ring-emerald-500"> Charts</label>
+                <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3 bg-white/75"><input id="map" type="checkbox" checked class="rounded text-emerald-600 focus:ring-emerald-500"> Leaflet map</label>
+                <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3 bg-white/75"><input id="table" type="checkbox" checked class="rounded text-emerald-600 focus:ring-emerald-500"> Searchable table</label>
+                <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3 bg-white/75"><input id="filters" type="checkbox" checked class="rounded text-emerald-600 focus:ring-emerald-500"> Sidebar filters</label>
+                <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3 bg-white/75"><input id="exportBtn" type="checkbox" checked class="rounded text-emerald-600 focus:ring-emerald-500"> Export CSV</label>
+                <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3 bg-white/75"><input id="aiSummary" type="checkbox" class="rounded text-emerald-600 focus:ring-emerald-500"> AI-style summary panel</label>
+                <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3 bg-white/75"><input id="dataQuality" type="checkbox" checked class="rounded text-emerald-600 focus:ring-emerald-500"> Data quality panel</label>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold mb-2">Public Health Logic Presets</label>
+              <div class="grid grid-cols-1 gap-2 text-sm max-h-56 overflow-y-auto pr-1 soft-scroll">
+                <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3 bg-white/75"><input id="epidWeek" type="checkbox" checked class="rounded text-emerald-600 focus:ring-emerald-500"> Epid week / year analysis</label>
+                <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3 bg-white/75"><input id="notifDelay" type="checkbox" checked class="rounded text-emerald-600 focus:ring-emerald-500"> Notification timeliness</label>
+                <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3 bg-white/75"><input id="regDelay" type="checkbox" checked class="rounded text-emerald-600 focus:ring-emerald-500"> Registration delay categories</label>
+                <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3 bg-white/75"><input id="attackRate" type="checkbox" class="rounded text-emerald-600 focus:ring-emerald-500"> Outbreak attack rate</label>
+                <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3 bg-white/75"><input id="geoFilter" type="checkbox" checked class="rounded text-emerald-600 focus:ring-emerald-500"> District / mukim / facility filtering</label>
+                <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3 bg-white/75"><input id="statusTracking" type="checkbox" checked class="rounded text-emerald-600 focus:ring-emerald-500"> Status tracking</label>
+                <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3 bg-white/75"><input id="clusterDetection" type="checkbox" class="rounded text-emerald-600 focus:ring-emerald-500"> Cluster / locality detection</label>
+                <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3 bg-white/75"><input id="yoy" type="checkbox" class="rounded text-emerald-600 focus:ring-emerald-500"> Year-on-year comparison</label>
+                <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3 bg-white/75"><input id="priorityFlag" type="checkbox" checked class="rounded text-emerald-600 focus:ring-emerald-500"> Priority flags for delayed / incomplete records</label>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold mb-1">Additional Special Logic</label>
+              <textarea id="logic" rows="4" placeholder="Example: Delay categories <7, 8-14, >14 days; remove pending records; use red for delayed, green for completed; word cloud; compare current epid week vs previous week." class="w-full rounded-xl border-slate-300 focus:border-emerald-500 focus:ring-emerald-500"></textarea>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold mb-1">Prompt Output Mode</label>
+              <select id="mode" class="w-full rounded-xl border-slate-300 focus:border-emerald-500 focus:ring-emerald-500">
+                <option value="full">Full Apps Script Dashboard Build + Deployment Prompt</option>
+                <option value="phase1">Phase 1: Data Ingestion & Schema Analysis Only</option>
+                <option value="phase2">Phase 2: Apps Script Code.gs + Index.html Build Only</option>
+                <option value="phase3">Phase 3: Leaflet Map Integration Only</option>
+                <option value="phase4">Phase 4: Global State, Filters & Cross-Filtering Only</option>
+                <option value="deploy">Deployment Guide Prompt Only</option>
+                <option value="debug">Debug / Fix Existing Apps Script Dashboard Prompt</option>
+              </select>
+            </div>
+
+            <button onclick="generatePrompt()" class="w-full rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 shadow-lg shadow-emerald-600/20 transition">Generate Apps Script Prompt</button>
+          </div>
+        </div>
+      </aside>
+
+      <section class="lg:col-span-7 xl:col-span-8">
+        <div class="rounded-3xl border border-white/10 bg-white/8 shadow-2xl overflow-hidden">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-white/10 px-5 py-4 bg-white/5">
+            <div>
+              <h2 class="text-xl font-bold">Generated Apps Script Dashboard Prompt</h2>
+              <p class="text-sm text-slate-400">Copy this into ChatGPT/Gemini to generate Code.gs, Index.html, setup steps, and Web App deployment instructions.</p>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="copyPrompt(event)" class="rounded-xl bg-white text-slate-950 px-4 py-2 text-sm font-bold hover:bg-slate-200 transition">Copy</button>
+              <button onclick="downloadPrompt()" class="rounded-xl border border-white/15 px-4 py-2 text-sm font-bold hover:bg-white/10 transition">Download .txt</button>
+            </div>
+          </div>
+          <textarea id="output" class="soft-scroll h-[880px] w-full resize-none bg-slate-950/60 text-slate-100 p-5 leading-relaxed outline-none" spellcheck="false">Choose your settings, then click “Generate Apps Script Prompt”.</textarea>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    function value(id) {
+      return document.getElementById(id).value.trim();
+    }
+
+    function checked(id) {
+      return document.getElementById(id).checked;
+    }
+
+    function selectedFeatures() {
+      const features = [];
+      if (checked('kpi')) features.push('KPI cards with counts, percentages, trend indicators, and colour-coded status labels');
+      if (checked('charts')) features.push('Chart.js visualisations such as epidemic curve, bar chart, line chart, doughnut chart, stacked bar chart, and trend comparison where appropriate');
+      if (checked('map')) features.push('Leaflet.js map with OpenStreetMap tiles, circular markers, dynamic popups, status colours, and map.fitBounds() after filtering');
+      if (checked('table')) features.push('searchable operational line-list table with instant search and clean responsive layout');
+      if (checked('filters')) features.push('left sidebar filters populated dynamically from unique Google Sheet values');
+      if (checked('exportBtn')) features.push('CSV export for the currently filtered table');
+      if (checked('aiSummary')) features.push('AI-style weekly interpretation panel with key messages, alerts, and recommended actions based on filtered data');
+      if (checked('dataQuality')) features.push('data quality panel highlighting missing dates, invalid coordinates, duplicate IDs, missing status, and incomplete records');
+      return features;
+    }
+
+    function selectedLogic() {
+      const logic = [];
+      if (checked('epidWeek')) logic.push('Epidemiological week and year calculation from relevant date fields');
+      if (checked('notifDelay')) logic.push('Notification timeliness calculation such as diagnosis date to notification/input date');
+      if (checked('regDelay')) logic.push('Registration delay categories such as <7 days, 8–14 days, and >14 days, with configurable thresholds');
+      if (checked('attackRate')) logic.push('Outbreak attack rate calculation using cases divided by exposed population multiplied by 100');
+      if (checked('geoFilter')) logic.push('District, mukim, locality, facility, and institution filtering');
+      if (checked('statusTracking')) logic.push('Operational status tracking such as registered, pending, completed, delayed, cancelled, active, closed, or under investigation');
+      if (checked('clusterDetection')) logic.push('Cluster or locality grouping by place, institution, date range, and case count');
+      if (checked('yoy')) logic.push('Year-on-year comparison for current epid week versus the same epid week in previous years');
+      if (checked('priorityFlag')) logic.push('Priority flags for delayed, incomplete, high-risk, or missing-action records');
+      return logic;
+    }
+
+    function deploymentBlock() {
+      return `\n\nMANDATORY DEPLOYMENT INSTRUCTIONS TO INCLUDE IN YOUR ANSWER:\n\nAfter providing the code, give a beginner-friendly step-by-step deployment guide for Google Apps Script Web App:\n\n1. Prepare Google Sheet\n   - Open the Google Sheet containing the dashboard data.\n   - Confirm the first row contains clean column headers.\n   - Remove merged cells from the data table.\n   - Confirm date fields, status fields, numeric fields, and latitude/longitude fields.\n\n2. Open Apps Script\n   - In Google Sheets, click Extensions > Apps Script.\n   - Rename the project clearly, for example: KKM Dashboard Web App.\n\n3. Create project files\n   - Create or replace Code.gs with the server-side code.\n   - Create an HTML file named Index.\n   - Paste the full Index.html code into the Index file.\n   - Explain exactly where to paste Spreadsheet ID, sheet name, and important variable names.\n\n4. Save and authorize\n   - Click Save.\n   - Run a safe function if needed to trigger authorization.\n   - Review permission screen and allow access to the spreadsheet.\n\n5. Deploy as Web App\n   - Click Deploy > New deployment.\n   - Click the gear icon and choose Web app.\n   - Description: Initial dashboard deployment.\n   - Execute as: Me.\n   - Who has access: Anyone with the link, or Anyone within organisation, depending on data sensitivity.\n   - Click Deploy.\n   - Copy the Web App URL.\n\n6. Test\n   - Open the Web App URL in a browser.\n   - Check KPI cards, filters, charts, map, table, and export button.\n   - Test with empty filters, missing dates, invalid coordinates, and mobile screen size.\n\n7. Update future versions\n   - After editing code, click Deploy > Manage deployments.\n   - Select the existing deployment.\n   - Click Edit.\n   - Choose New version.\n   - Deploy again.\n   - Use the same Web App URL unless a new deployment is created.\n\n8. Security note\n   - Remind me not to expose identifiable patient data publicly.\n   - For sensitive KKM data, recommend access restricted to organisation or anonymised/de-identified data.\n`;
+    }
+
+    function generatePrompt() {
+      const dashboardType = value('dashboardType');
+      const inputType = value('inputType');
+      const behaviour = value('behaviour');
+      const promptLevel = value('promptLevel');
+      const theme = value('theme');
+      const datasetContext = value('datasetContext') || '[Paste Google Sheet ID, sheet name, column names, sample rows, date fields, status fields, latitude/longitude fields, disease/facility/mukim/district variables here]';
+      const objective = value('objective') || '[Describe the main dashboard objective here]';
+      const additionalLogic = value('logic') || 'Use safe date handling, clean JSON serialization, centralised filtering, Chart.js destroy/rebuild logic, and robust missing-value handling.';
+      const mode = value('mode');
+      const features = selectedFeatures();
+      const logic = selectedLogic();
+
+      const sharedContext = `Dashboard type: ${dashboardType}\nData input type: ${inputType}\nDashboard behaviour: ${behaviour}\nPrompt level: ${promptLevel}\nDesign style: ${theme}\n\nDataset context:\n${datasetContext}\n\nMain objective:\n${objective}\n\nSelected components:\n${features.map((f, i) => `${i + 1}. ${f}`).join('\n')}\n\nSelected public health logic:\n${logic.map((l, i) => `${i + 1}. ${l}`).join('\n')}\n\nAdditional special logic:\n${additionalLogic}`;
+
+      const phase1 = `Act as an expert public health data analyst, KKM surveillance officer, data engineer, and Google Apps Script dashboard architect.\n\nI want to build a Google Apps Script Web App dashboard.\n\n${sharedContext}\n\nDo not write the full dashboard code yet. First, analyze the dataset and produce:\n1. A clean list of all expected columns and data types.\n2. Identification of date, number, category, free-text, latitude, and longitude fields.\n3. Suggested KPI cards.\n4. Suggested filters.\n5. Suggested charts.\n6. Suggested map layer logic, if coordinates exist.\n7. Suggested data quality checks.\n8. Potential problems such as missing values, inconsistent spellings, duplicate IDs, invalid coordinates, or mixed date formats.\n9. A proposed Google Apps Script project architecture using Code.gs and Index.html.\n\nEnd with a clear summary of assumptions before code generation.`;
+
+      const phase2 = `Act as an expert Google Apps Script developer and KKM dashboard UI/UX designer.\n\nBuild a complete Google Apps Script Web App dashboard based on the following specification:\n\n${sharedContext}\n\nPlease provide complete copy-paste-ready code with clear separation:\n\nFILE 1: Code.gs\n- Implement doGet() using HtmlService.\n- Implement a server-side function to fetch rows from Google Sheets.\n- Convert spreadsheet rows into an array of objects using the first row as headers.\n- Convert native Google Sheets Date objects into safe dd/MM/yyyy strings before returning to the frontend.\n- Add defensive handling for blank cells, missing headers, and empty sheets.\n- Return clean JSON-safe data to the client.\n\nFILE 2: Index.html\n- Build a responsive dashboard UI.\n- Use Tailwind CSS via CDN.\n- Use Chart.js via CDN.\n- Use Leaflet.js via CDN if map is selected.\n- Include sidebar filters, KPI cards, charts, searchable table, map, export button, and data quality panel according to the selected components.\n- Use global dataset cache and centralised applyFilters() function.\n- Destroy existing Chart.js instances before redrawing.\n- Use map.fitBounds() after filter updates if markers exist.\n- Handle empty filtered results gracefully.\n\nAlso include clear comments in the code showing where to change Spreadsheet ID, sheet name, and column names.` + deploymentBlock();
+
+      const phase3 = `Act as an expert Leaflet.js and Google Apps Script dashboard developer.\n\nI already have or will have an Apps Script dashboard. Please upgrade it with a Leaflet geospatial map layer.\n\n${sharedContext}\n\nMap requirements:\n1. Use Leaflet.js with OpenStreetMap tiles.\n2. Detect valid latitude and longitude values from the dataset.\n3. Render circular markers.\n4. Colour-code markers by the most relevant status/risk/category variable.\n5. Add HTML popups with important fields such as case ID, facility, district, mukim, disease, status, and dates.\n6. Update markers whenever filters change.\n7. Use map.fitBounds() so the map auto-zooms to active filtered records.\n8. Show a friendly empty-state if there are no valid coordinates.\n\nProvide the exact HTML, CSS, and JavaScript changes needed inside Index.html, and explain where to insert them.`;
+
+      const phase4 = `Act as an expert frontend JavaScript architect for Google Apps Script Web App dashboards.\n\nI want to optimise the dashboard with clean global state management and cross-filtering.\n\n${sharedContext}\n\nPlease implement or refactor the client-side JavaScript to include:\n1. rawData global cache.\n2. filteredData global state.\n3. filterConfig object.\n4. initDashboard() after google.script.run successfully returns data.\n5. populateFilters() using unique values from the dataset.\n6. applyFilters() as the only central filtering pipeline.\n7. updateKPIs(), updateCharts(), updateMap(), updateTable(), updateDataQualityPanel().\n8. applyTableSearch() that searches within the already-filtered subset.\n9. Chart.js lifecycle management using .destroy() before redraw.\n10. Defensive handling for missing values, blank filters, invalid dates, invalid coordinates, and empty results.\n\nProvide clean, reusable JavaScript code for Index.html.`;
+
+      const deployPrompt = `Act as a Google Apps Script deployment coach.\n\nI am building this dashboard:\n\n${sharedContext}\n\nGive me a beginner-friendly, step-by-step guide to deploy this as a Google Apps Script Web App from a Google Sheet.\n\nThe guide must include:\n1. How to prepare the Google Sheet.\n2. How to open Apps Script.\n3. How to create Code.gs and Index.html.\n4. Where to paste the code.\n5. How to save and authorize.\n6. How to deploy as Web App.\n7. What to choose for Execute as and Who has access.\n8. How to test the Web App link.\n9. How to update the deployment after editing the code.\n10. Security advice for sensitive KKM or patient-related data.`;
+
+      const debugPrompt = `Act as an expert Google Apps Script debugger and dashboard engineer.\n\nI have an existing Apps Script Web App dashboard with an error or feature issue.\n\nDashboard context:\n${sharedContext}\n\nI will paste my Code.gs, Index.html, browser console error, or Apps Script error log.\n\nPlease debug systematically:\n1. Identify the likely root cause.\n2. Explain the issue in simple language.\n3. Provide corrected code blocks only for the affected sections.\n4. Check for common Apps Script dashboard problems: Date object JSON failure, wrong sheet name, wrong Spreadsheet ID, missing headers, google.script.run async issue, Chart.js duplicate canvas redraw, Leaflet map not resizing, CORS/API issue, and deployment version not updated.\n5. Provide a short checklist to test after fixing.`;
+
+      let prompt = '';
+      if (mode === 'phase1') prompt = phase1;
+      if (mode === 'phase2') prompt = phase2;
+      if (mode === 'phase3') prompt = phase3;
+      if (mode === 'phase4') prompt = phase4;
+      if (mode === 'deploy') prompt = deployPrompt;
+      if (mode === 'debug') prompt = debugPrompt;
+      if (mode === 'full') {
+        prompt = `Act as an expert Google Apps Script developer, public health data analyst, KKM dashboard architect, and UI/UX designer.\n\nI want you to generate a complete Google Apps Script Web App dashboard.\n\n${sharedContext}\n\nPlease produce a complete production-grade solution using this structure:\n\nPHASE 1 — Dataset understanding and assumptions\n- Analyze the dataset structure based on the provided fields.\n- Identify date, numeric, categorical, text, latitude, and longitude columns.\n- Recommend KPI cards, filters, charts, table columns, map popups, and data quality checks.\n- State assumptions clearly before coding.\n\nPHASE 2 — Google Apps Script server-side file\nProvide FILE 1: Code.gs\n- doGet() using HtmlService.\n- getDashboardData() or similar function to read the Google Sheet.\n- Use SpreadsheetApp.openById() or getActiveSpreadsheet(), depending on the input context.\n- Read the selected sheet by name.\n- Convert the first row into headers.\n- Convert each row into an object.\n- Convert native Date objects to dd/MM/yyyy strings before JSON serialization.\n- Handle blank cells, empty rows, duplicate headers, missing sheets, and empty data safely.\n\nPHASE 3 — Client-side dashboard file\nProvide FILE 2: Index.html\n- Use Tailwind CSS via CDN.\n- Use Chart.js via CDN.\n- Use Leaflet.js via CDN if map is selected.\n- Build a responsive layout with sidebar filters and main dashboard canvas.\n- Include selected components: KPI cards, charts, map, table, export, AI summary, and data quality panel as selected.\n- Use the selected design style.\n- Include loading state, empty state, and error state.\n\nPHASE 4 — Interactivity and global state\n- Use rawData global cache.\n- Use filteredData global state.\n- Build populateFilters(), applyFilters(), updateKPIs(), updateCharts(), updateMap(), updateTable(), and updateDataQualityPanel().\n- Ensure all filters update every dashboard element at the same time.\n- Keep table search working within the current filtered dataset.\n- Destroy Chart.js instances before redrawing.\n- Use map.fitBounds() after marker refresh.\n\nPHASE 5 — Public health calculations\nImplement the selected public health logic where possible:\n${logic.map((l, i) => `${i + 1}. ${l}`).join('\n')}\n\nPHASE 6 — Code comments and customisation points\nClearly mark where I need to edit:\n- Spreadsheet ID.\n- Sheet name.\n- Date column names.\n- Status column names.\n- Latitude and longitude column names.\n- KPI definitions.\n- Delay thresholds.\n- Colour mapping.\n\nPHASE 7 — Deployment\nInclude detailed beginner-friendly deployment instructions for Google Apps Script Web App.\n\nImportant technical requirements:\n- Avoid JSON serialization errors caused by native Google Sheets Date objects.\n- Use defensive coding for missing values and inconsistent data.\n- Ensure the dashboard can be redeployed after code edits.\n- Include security reminders for KKM or patient-related data.\n- Do not expose identifiable patient data in a public Web App.` + deploymentBlock();
+      }
+
+      document.getElementById('output').value = prompt;
+    }
+
+    async function copyPrompt(event) {
+      const text = document.getElementById('output').value;
+      await navigator.clipboard.writeText(text);
+      const btn = event.target;
+      const original = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = original, 1200);
+    }
+
+    function downloadPrompt() {
+      const text = document.getElementById('output').value;
+      const blob = new Blob([text], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'kkm-appscript-dashboard-prompt.txt';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function resetForm() {
+      document.getElementById('dashboardType').selectedIndex = 0;
+      document.getElementById('inputType').selectedIndex = 0;
+      document.getElementById('behaviour').selectedIndex = 0;
+      document.getElementById('promptLevel').selectedIndex = 0;
+      document.getElementById('theme').selectedIndex = 0;
+      document.getElementById('datasetContext').value = '';
+      document.getElementById('objective').value = '';
+      document.getElementById('logic').value = '';
+      document.getElementById('mode').value = 'full';
+      ['kpi','charts','map','table','filters','exportBtn','dataQuality','epidWeek','notifDelay','regDelay','geoFilter','statusTracking','priorityFlag'].forEach(id => document.getElementById(id).checked = true);
+      ['aiSummary','attackRate','clusterDetection','yoy'].forEach(id => document.getElementById(id).checked = false);
+      generatePrompt();
+    }
+
+    generatePrompt();
+  </script>
+</body>
+</html>
