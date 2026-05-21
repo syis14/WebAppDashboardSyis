@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KKM Apps Script Dashboard Prompt Generator</title>
+  <title>Apps Script Dashboard Prompt Generator</title>
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -96,6 +96,18 @@
     .check-card input {
       margin-top: 0.1rem;
     }
+
+    .mini-badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 0.2rem 0.55rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      background: #ecfdf5;
+      color: #047857;
+      border: 1px solid #a7f3d0;
+    }
   </style>
 </head>
 
@@ -112,16 +124,16 @@
     <header class="mb-8">
       <div class="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-4 py-2 text-sm text-emerald-200 mb-4">
         <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
-        KKM Dashboard Prompt Builder • Google Apps Script Web App
+        Dashboard Prompt Builder • Google Apps Script Web App
       </div>
 
       <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
         <div>
           <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">
-            KKM Apps Script Dashboard Prompt Generator
+            Apps Script Dashboard Prompt Generator
           </h1>
           <p class="mt-3 text-slate-300 max-w-3xl">
-            Generate a complete professional prompt for creating KKM-style dashboards using Google Sheets,
+            Generate a complete professional prompt for creating KKM, hospital, clinic, or non-KKM dashboards using Google Sheets,
             Apps Script, HTML, Chart.js, Tailwind CSS, and optional Leaflet maps.
           </p>
         </div>
@@ -137,35 +149,31 @@
       <!-- Settings panel -->
       <aside class="lg:col-span-6 xl:col-span-5">
         <div class="glass rounded-3xl border border-white/10 shadow-2xl p-5 text-slate-900">
-          <h2 class="text-xl font-bold text-slate-950">Dashboard Builder Settings</h2>
-          <p class="text-sm text-slate-600 mt-1">
-            Select the dashboard use case, data source, design, features, and deployment needs.
-          </p>
+          <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+            <div>
+              <h2 class="text-xl font-bold text-slate-950">Dashboard Builder Settings</h2>
+              <p class="text-sm text-slate-600 mt-1">
+                Select organisation type, dashboard use case, data source, design, features, and deployment needs.
+              </p>
+            </div>
+            <span id="orgBadge" class="mini-badge">KKM Mode</span>
+          </div>
 
           <div class="mt-5 space-y-5">
+            <!-- Organisation Type -->
+            <div>
+              <label class="field-label" for="orgType">Organisation Type</label>
+              <select id="orgType" class="form-control" onchange="updateDashboardTypeOptions()">
+                <option value="kkm">KKM / Public Health / Hospital / Klinik</option>
+                <option value="nonkkm">Non-KKM / Other Organisation</option>
+              </select>
+              <p id="orgTypePreview" class="helper-text"></p>
+            </div>
+
             <!-- Dashboard Type -->
             <div>
-              <label class="field-label" for="dashboardType">KKM Dashboard Type</label>
-              <select id="dashboardType" class="form-control" onchange="updatePreviews()">
-                <option value="eNotifikasi Infectious Disease Surveillance Dashboard">eNotifikasi Surveillance Dashboard</option>
-                <option value="HFMD Institutional Surveillance Dashboard">HFMD Institutional Dashboard</option>
-                <option value="Dengue Locality Action Dashboard">Dengue Locality Dashboard</option>
-                <option value="Food Poisoning Outbreak Investigation Dashboard">Food Poisoning Outbreak Dashboard</option>
-                <option value="TB Diagnosis Delay and Contact Screening Dashboard">TB Delay & Contact Dashboard</option>
-                <option value="CPRC Daily Situation / Crisis Monitoring Dashboard">CPRC Situation Dashboard</option>
-                <option value="Immunisation Coverage and Defaulter Dashboard">Immunisation Dashboard</option>
-                <option value="NCD Clinic Control Dashboard">NCD Clinic Dashboard</option>
-                <option value="Maternal and Child Health High-Risk Dashboard">MCH High-Risk Dashboard</option>
-                <option value="Emergency Department Throughput Dashboard">ED Throughput Dashboard</option>
-                <option value="Clinic Operations / Revenue / Roster Dashboard">Clinic Operations Dashboard</option>
-                <option value="Training / Webinar Feedback Dashboard">Training Feedback Dashboard</option>
-                <option value="Research / Thesis Results Dashboard">Research Results Dashboard</option>
-                <option value="Audit / Quality Improvement Indicator Dashboard">Audit / QI Dashboard</option>
-                <option value="Environmental Health Inspection Dashboard">Environmental Health Dashboard</option>
-                <option value="Vector Control Operations Dashboard">Vector Control Dashboard</option>
-                <option value="Disaster / CBRNe Response Dashboard">CBRNe Response Dashboard</option>
-                <option value="Custom KKM Dashboard">Custom KKM Dashboard</option>
-              </select>
+              <label id="dashboardTypeLabel" class="field-label" for="dashboardType">Dashboard Template</label>
+              <select id="dashboardType" class="form-control" onchange="updatePreviews()"></select>
               <p id="dashboardTypePreview" class="helper-text"></p>
             </div>
 
@@ -184,7 +192,7 @@
               <p id="inputTypePreview" class="helper-text"></p>
             </div>
 
-            <!-- Behaviour and Prompt Level: changed to 1-column to avoid text cropping -->
+            <!-- Behaviour and Prompt Level -->
             <div class="grid grid-cols-1 gap-4">
               <div>
                 <label class="field-label" for="behaviour">Dashboard Behaviour</label>
@@ -217,6 +225,8 @@
               <label class="field-label" for="theme">Design Style</label>
               <select id="theme" class="form-control">
                 <option>KKM Corporate Clean — white, blue, teal, official meeting style</option>
+                <option>Hospital Command Centre — dark navy, red/orange alert badges, bed/status cards</option>
+                <option>Klinik Kesihatan Operations — clean, patient-flow, appointment and service cards</option>
                 <option>CPRC Command Centre — dark navy, alert badges, map-first layout</option>
                 <option>Minimal Clinical White — clean, calm, clinic-friendly layout</option>
                 <option>Dark Epidemiology Intelligence — slate, emerald, cyan, surveillance style</option>
@@ -224,6 +234,9 @@
                 <option>Executive Boardroom — polished KPI-first management dashboard</option>
                 <option>Mobile-first Field Dashboard — simple, large buttons, fast loading</option>
                 <option>Looker Studio Inspired — simple reporting dashboard layout</option>
+                <option>Corporate Analytics — clean business KPI style</option>
+                <option>Education Dashboard — bright academic performance style</option>
+                <option>NGO / Project Monitoring — impact, milestones, beneficiary tracking style</option>
               </select>
             </div>
 
@@ -256,24 +269,14 @@
 
             <!-- Logic Presets -->
             <div>
-              <label class="field-label">Public Health Logic Presets</label>
-              <div class="grid grid-cols-1 gap-2 text-sm max-h-60 overflow-y-auto pr-1 soft-scroll">
-                <label class="check-card"><input id="epidWeek" type="checkbox" checked class="rounded text-emerald-600 focus:ring-emerald-500"> Epid week / year analysis</label>
-                <label class="check-card"><input id="notifDelay" type="checkbox" checked class="rounded text-emerald-600 focus:ring-emerald-500"> Notification timeliness</label>
-                <label class="check-card"><input id="regDelay" type="checkbox" checked class="rounded text-emerald-600 focus:ring-emerald-500"> Registration delay categories</label>
-                <label class="check-card"><input id="attackRate" type="checkbox" class="rounded text-emerald-600 focus:ring-emerald-500"> Outbreak attack rate</label>
-                <label class="check-card"><input id="geoFilter" type="checkbox" checked class="rounded text-emerald-600 focus:ring-emerald-500"> District / mukim / facility filtering</label>
-                <label class="check-card"><input id="statusTracking" type="checkbox" checked class="rounded text-emerald-600 focus:ring-emerald-500"> Status tracking</label>
-                <label class="check-card"><input id="clusterDetection" type="checkbox" class="rounded text-emerald-600 focus:ring-emerald-500"> Cluster / locality detection</label>
-                <label class="check-card"><input id="yoy" type="checkbox" class="rounded text-emerald-600 focus:ring-emerald-500"> Year-on-year comparison</label>
-                <label class="check-card"><input id="priorityFlag" type="checkbox" checked class="rounded text-emerald-600 focus:ring-emerald-500"> Priority flags for delayed / incomplete records</label>
-              </div>
+              <label id="logicPresetLabel" class="field-label">Domain Logic Presets</label>
+              <div id="logicPresetContainer" class="grid grid-cols-1 gap-2 text-sm max-h-72 overflow-y-auto pr-1 soft-scroll"></div>
             </div>
 
             <!-- Additional Logic -->
             <div>
               <label class="field-label" for="logic">Additional Special Logic</label>
-              <textarea id="logic" rows="4" class="form-control" placeholder="Example: Delay categories <7, 8-14, >14 days; remove pending records; use red for delayed, green for completed; word cloud; compare current epid week vs previous week."></textarea>
+              <textarea id="logic" rows="4" class="form-control" placeholder="Example: Delay categories <7, 8-14, >14 days; remove pending records; use red for delayed, green for completed; word cloud; compare current period vs previous period."></textarea>
             </div>
 
             <!-- Mode -->
@@ -322,7 +325,8 @@
         </div>
       </section>
     </section>
-      <footer class="mt-8 text-center text-sm text-slate-400">
+
+    <footer class="mt-8 text-center text-sm text-slate-400">
       <div class="inline-flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 rounded-2xl border border-white/10 bg-white/5 px-5 py-3">
         <span>Developed and designed by</span>
         <span class="font-semibold text-emerald-200">Dr. Mohd Syis Zulkipli</span>
@@ -332,6 +336,85 @@
   </main>
 
   <script>
+    const dashboardTemplates = {
+      kkm: [
+        { label: 'eNotifikasi Surveillance Dashboard', value: 'eNotifikasi Infectious Disease Surveillance Dashboard', desc: 'Disease notification, timeliness, epidemic week, district, mukim, and line-list monitoring.' },
+        { label: 'HFMD Institutional Dashboard', value: 'HFMD Institutional Surveillance Dashboard', desc: 'HFMD cases by institution, closure status, clusters, diagnosis trend, and geospatial monitoring.' },
+        { label: 'Dengue Locality Dashboard', value: 'Dengue Locality Action Dashboard', desc: 'Locality cases, outbreak status, fogging, larviciding, Aedes index, and overdue action tracking.' },
+        { label: 'Food Poisoning Outbreak Dashboard', value: 'Food Poisoning Outbreak Investigation Dashboard', desc: 'Line-listing, attack rate, symptom profile, food exposure, epidemic curve, and investigation status.' },
+        { label: 'TB Delay & Contact Dashboard', value: 'TB Diagnosis Delay and Contact Screening Dashboard', desc: 'Symptom onset to diagnosis, treatment start, contact screening, sputum status, and delay categories.' },
+        { label: 'CPRC Situation Dashboard', value: 'CPRC Daily Situation / Crisis Monitoring Dashboard', desc: 'Incident monitoring, live alerts, daily situation report, resource status, and operational command view.' },
+        { label: 'Immunisation Dashboard', value: 'Immunisation Coverage and Defaulter Dashboard', desc: 'Coverage by antigen, age group, clinic, defaulter list, and locality performance.' },
+        { label: 'NCD Clinic Dashboard', value: 'NCD Clinic Control Dashboard', desc: 'Diabetes, hypertension, lipid control, appointment defaulting, high-risk flags, and clinic performance.' },
+        { label: 'MCH High-Risk Dashboard', value: 'Maternal and Child Health High-Risk Dashboard', desc: 'High-risk pregnancy, ANC booking, referral status, gestational age, and follow-up tracking.' },
+        { label: 'ED Throughput Dashboard', value: 'Emergency Department Throughput Dashboard', desc: 'Triage category, waiting time, admission, discharge, bed status, and bottleneck monitoring.' },
+        { label: 'Clinic Operations Dashboard', value: 'Clinic Operations / Revenue / Roster Dashboard', desc: 'Clinic sessions, doctor load, roster, billing, appointment volume, and operational KPIs.' },
+        { label: 'Hospital Operations Dashboard', value: 'Hospital Operations and Bed Management Dashboard', desc: 'Bed occupancy, ward status, admission, discharge, transfer, length of stay, and service utilisation.' },
+        { label: 'Hospital + Klinik Integrated Dashboard', value: 'Hospital and Klinik Kesihatan Integrated Performance Dashboard', desc: 'Combined hospital and primary care monitoring across sites, services, referrals, workload, and KPIs.' },
+        { label: 'Klinik Kesihatan Operations Dashboard', value: 'Klinik Kesihatan Operations and Patient Flow Dashboard', desc: 'Queue, appointment, daily attendance, chronic clinic, MCH, pharmacy, laboratory, and referral tracking.' },
+        { label: 'Specialist Clinic Dashboard', value: 'Hospital Specialist Clinic Appointment and Defaulter Dashboard', desc: 'Specialist clinic appointments, defaulters, waiting time, referral source, and clinic utilisation.' },
+        { label: 'Pharmacy Supply Dashboard', value: 'Hospital and Klinik Pharmacy Medication Supply Dashboard', desc: 'Stock status, near-expiry medication, usage trend, supply risk, and facility-level monitoring.' },
+        { label: 'Laboratory / Radiology TAT Dashboard', value: 'Hospital Laboratory and Radiology Turnaround Time Dashboard', desc: 'Order-to-result time, modality/test volume, delayed reports, urgent cases, and department performance.' },
+        { label: 'Patient Safety Dashboard', value: 'Hospital and Clinic Patient Safety Incident Dashboard', desc: 'Incident reports, severity, category, location, trend, investigation status, and action tracking.' },
+        { label: 'Training Feedback Dashboard', value: 'Training / Webinar Feedback Dashboard', desc: 'Participant rating, speaker delivery, content quality, comments, preferred time, and future topic suggestions.' },
+        { label: 'Research Results Dashboard', value: 'Research / Thesis Results Dashboard', desc: 'Descriptive statistics, prevalence, factors, cross-tabulation, charting, and research reporting.' },
+        { label: 'Audit / QI Dashboard', value: 'Audit / Quality Improvement Indicator Dashboard', desc: 'Indicator compliance, department performance, action plan, target achievement, and improvement tracking.' },
+        { label: 'Environmental Health Dashboard', value: 'Environmental Health Inspection Dashboard', desc: 'Food premises inspection, grading, enforcement, licensing, and compliance monitoring.' },
+        { label: 'Vector Control Dashboard', value: 'Vector Control Operations Dashboard', desc: 'Breeding sites, larval survey, vector control activity, hotspots, and field action tracking.' },
+        { label: 'CBRNe Response Dashboard', value: 'Disaster / CBRNe Response Dashboard', desc: 'Incident location, risk zones, casualties, team deployment, resource needs, and response status.' },
+        { label: 'Custom KKM Dashboard', value: 'Custom KKM Dashboard', desc: 'Flexible KKM, hospital, clinic, or public health dashboard based on user-defined data and objectives.' }
+      ],
+      nonkkm: [
+        { label: 'Corporate KPI Dashboard', value: 'Corporate KPI and Executive Performance Dashboard', desc: 'Management KPIs, targets, department performance, financial indicators, and executive reporting.' },
+        { label: 'Sales & Marketing Dashboard', value: 'Sales and Marketing Performance Dashboard', desc: 'Sales funnel, revenue, leads, campaign performance, customer segments, and conversion rate.' },
+        { label: 'Finance Dashboard', value: 'Finance, Budget and Expense Monitoring Dashboard', desc: 'Income, expenses, budget variance, cash flow, profit margin, and financial trend monitoring.' },
+        { label: 'HR Workforce Dashboard', value: 'Human Resource Workforce and Attendance Dashboard', desc: 'Staff count, attendance, leave, turnover, training, payroll summary, and workforce planning.' },
+        { label: 'Project Monitoring Dashboard', value: 'Project Management Milestone and Risk Dashboard', desc: 'Milestones, timelines, task ownership, risk status, overdue actions, and progress tracking.' },
+        { label: 'NGO Impact Dashboard', value: 'NGO Project Monitoring and Beneficiary Impact Dashboard', desc: 'Beneficiary count, project output, donor reporting, location impact, and intervention progress.' },
+        { label: 'University Research Dashboard', value: 'University Research and Publication Dashboard', desc: 'Research projects, grants, publications, supervision, ethics status, and academic output.' },
+        { label: 'School Performance Dashboard', value: 'School Academic Performance and Attendance Dashboard', desc: 'Student performance, attendance, class comparison, subject trend, and intervention monitoring.' },
+        { label: 'Training / Workshop Dashboard', value: 'Training / Workshop Feedback Dashboard', desc: 'Participant satisfaction, learning outcome, content rating, trainer feedback, and future topic preference.' },
+        { label: 'Customer Feedback Dashboard', value: 'Customer Feedback and Service Quality Dashboard', desc: 'Customer satisfaction, complaints, service categories, response time, and sentiment tracking.' },
+        { label: 'Inventory Dashboard', value: 'Inventory and Stock Monitoring Dashboard', desc: 'Stock level, reorder alerts, usage trend, supplier status, and slow-moving items.' },
+        { label: 'Logistics Dashboard', value: 'Logistics Delivery and Fleet Monitoring Dashboard', desc: 'Delivery status, route performance, fleet usage, delay tracking, and cost monitoring.' },
+        { label: 'Private Clinic Dashboard', value: 'Private Clinic Operations and Revenue Dashboard', desc: 'Appointments, provider sessions, billing, patient flow, revenue, staffing, and service utilisation.' },
+        { label: 'Private Hospital Admin Dashboard', value: 'Private Hospital Administrative and Operations Dashboard', desc: 'Admissions, discharge, bed occupancy, departments, revenue, and operational performance.' },
+        { label: 'Real Estate Dashboard', value: 'Real Estate Property and Rental Performance Dashboard', desc: 'Occupancy, rental collection, property performance, maintenance requests, and revenue trend.' },
+        { label: 'Social Media Analytics Dashboard', value: 'Social Media Content and Engagement Dashboard', desc: 'Reach, engagement, followers, campaign posts, content performance, and growth trends.' },
+        { label: 'Custom Organisation Dashboard', value: 'Custom Non-KKM Organisation Dashboard', desc: 'Flexible dashboard for any organisation using user-defined data, KPIs, filters, charts, and workflow.' }
+      ]
+    };
+
+    const logicTemplates = {
+      kkm: [
+        { id: 'epidWeek', label: 'Epid week / year analysis', text: 'Epidemiological week and year calculation from relevant date fields', checked: true },
+        { id: 'notifDelay', label: 'Notification timeliness', text: 'Notification timeliness calculation such as diagnosis date to notification/input date', checked: true },
+        { id: 'regDelay', label: 'Registration delay categories', text: 'Registration delay categories such as <7 days, 8–14 days, and >14 days, with configurable thresholds', checked: true },
+        { id: 'attackRate', label: 'Outbreak attack rate', text: 'Outbreak attack rate calculation using cases divided by exposed population multiplied by 100', checked: false },
+        { id: 'geoFilter', label: 'District / mukim / facility filtering', text: 'District, mukim, locality, facility, ward, clinic, and institution filtering', checked: true },
+        { id: 'statusTracking', label: 'Status tracking', text: 'Operational status tracking such as registered, pending, completed, delayed, cancelled, active, closed, or under investigation', checked: true },
+        { id: 'clusterDetection', label: 'Cluster / locality detection', text: 'Cluster or locality grouping by place, institution, date range, and case count', checked: false },
+        { id: 'yoy', label: 'Year-on-year comparison', text: 'Year-on-year comparison for current period versus the same period in previous years', checked: false },
+        { id: 'priorityFlag', label: 'Priority flags', text: 'Priority flags for delayed, incomplete, high-risk, overdue, or missing-action records', checked: true },
+        { id: 'bedOccupancy', label: 'Hospital bed occupancy', text: 'Hospital bed occupancy, admission, discharge, transfer, and length-of-stay indicators', checked: false },
+        { id: 'clinicFlow', label: 'Klinik patient flow', text: 'Klinik Kesihatan patient flow, appointment attendance, queue, referral, and service utilisation indicators', checked: false },
+        { id: 'tat', label: 'Turnaround time', text: 'Turnaround time calculation for laboratory, radiology, pharmacy, referral, or operational workflows', checked: false },
+        { id: 'defaulter', label: 'Appointment defaulter', text: 'Appointment defaulter tracking and follow-up priority list', checked: false }
+      ],
+      nonkkm: [
+        { id: 'trend', label: 'Time-period trend analysis', text: 'Time-period trend analysis by day, week, month, quarter, or year', checked: true },
+        { id: 'target', label: 'Target achievement', text: 'Target achievement calculation comparing actual performance against target or KPI benchmark', checked: true },
+        { id: 'department', label: 'Department / unit filter', text: 'Department, unit, branch, team, region, or category filtering', checked: true },
+        { id: 'revenue', label: 'Revenue / cost analysis', text: 'Revenue, cost, profit, budget variance, or financial performance calculation where relevant', checked: false },
+        { id: 'milestone', label: 'Project milestone tracking', text: 'Project milestone, deadline, owner, status, overdue action, and risk tracking', checked: false },
+        { id: 'customer', label: 'Customer / participant feedback', text: 'Customer, participant, student, or user satisfaction scoring and comment analysis', checked: false },
+        { id: 'attendance', label: 'Attendance monitoring', text: 'Attendance, participation, absence, defaulter, or completion-rate monitoring', checked: false },
+        { id: 'inventory', label: 'Inventory risk flags', text: 'Inventory stock status, low-stock alerts, reorder priority, expiry, and usage trend', checked: false },
+        { id: 'quality', label: 'Quality / compliance indicator', text: 'Quality, compliance, audit, incident, or performance indicator tracking', checked: true },
+        { id: 'dataQuality', label: 'Data quality audit', text: 'Data quality checks for missing values, duplicates, invalid dates, inconsistent categories, and incomplete records', checked: true }
+      ]
+    };
+
     function value(id) {
       return document.getElementById(id).value.trim();
     }
@@ -340,57 +423,134 @@
       return document.getElementById(id).checked;
     }
 
+    function getOrgTypeLabel() {
+      const orgType = value('orgType');
+      return orgType === 'kkm'
+        ? 'KKM / Public Health / Hospital / Klinik'
+        : 'Non-KKM / Other Organisation';
+    }
+
+    function updateDashboardTypeOptions() {
+      const orgType = value('orgType');
+      const select = document.getElementById('dashboardType');
+      const label = document.getElementById('dashboardTypeLabel');
+      const badge = document.getElementById('orgBadge');
+
+      select.innerHTML = '';
+
+      dashboardTemplates[orgType].forEach(item => {
+        const option = document.createElement('option');
+        option.value = item.value;
+        option.textContent = item.label;
+        option.dataset.desc = item.desc;
+        select.appendChild(option);
+      });
+
+      if (orgType === 'kkm') {
+        label.textContent = 'KKM / Hospital / Klinik Dashboard Template';
+        badge.textContent = 'KKM Mode';
+        document.getElementById('orgTypePreview').textContent =
+          'KKM mode includes public health, hospital operations, Klinik Kesihatan, CPRC, outbreak, surveillance, and programme dashboards.';
+      } else {
+        label.textContent = 'Non-KKM Dashboard Template';
+        badge.textContent = 'Non-KKM Mode';
+        document.getElementById('orgTypePreview').textContent =
+          'Non-KKM mode includes corporate, education, NGO, private healthcare, finance, HR, project, sales, and operations dashboards.';
+      }
+
+      renderLogicPresets();
+      updatePreviews();
+      generatePrompt();
+    }
+
+    function renderLogicPresets() {
+      const orgType = value('orgType');
+      const container = document.getElementById('logicPresetContainer');
+      const label = document.getElementById('logicPresetLabel');
+
+      label.textContent = orgType === 'kkm'
+        ? 'KKM / Hospital / Public Health Logic Presets'
+        : 'Organisation Dashboard Logic Presets';
+
+      container.innerHTML = '';
+
+      logicTemplates[orgType].forEach(item => {
+        const labelEl = document.createElement('label');
+        labelEl.className = 'check-card';
+
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        input.id = item.id;
+        input.className = 'logic-checkbox rounded text-emerald-600 focus:ring-emerald-500';
+        input.dataset.text = item.text;
+        input.checked = item.checked;
+
+        const span = document.createElement('span');
+        span.textContent = item.label;
+
+        labelEl.appendChild(input);
+        labelEl.appendChild(span);
+        container.appendChild(labelEl);
+      });
+    }
+
     function updatePreviews() {
+      const dashboardSelect = document.getElementById('dashboardType');
+      const selectedOption = dashboardSelect.options[dashboardSelect.selectedIndex];
       const dashboardType = value('dashboardType');
       const inputType = value('inputType');
-      document.getElementById('dashboardTypePreview').textContent = 'Selected: ' + dashboardType;
+
+      const desc = selectedOption && selectedOption.dataset.desc ? selectedOption.dataset.desc : '';
+      document.getElementById('dashboardTypePreview').textContent = desc
+        ? 'Selected: ' + dashboardType + ' — ' + desc
+        : 'Selected: ' + dashboardType;
+
       document.getElementById('inputTypePreview').textContent = 'Source: ' + inputType;
     }
 
     function selectedFeatures() {
       const features = [];
       if (checked('kpi')) features.push('KPI cards with counts, percentages, trend indicators, and colour-coded status labels');
-      if (checked('charts')) features.push('Chart.js visualisations such as epidemic curve, bar chart, line chart, doughnut chart, stacked bar chart, and trend comparison where appropriate');
+      if (checked('charts')) features.push('Chart.js visualisations such as trend charts, bar chart, line chart, doughnut chart, stacked bar chart, and comparison charts where appropriate');
       if (checked('map')) features.push('Leaflet.js map with OpenStreetMap tiles, circular markers, dynamic popups, status colours, and map.fitBounds() after filtering');
       if (checked('table')) features.push('searchable operational line-list table with instant search and clean responsive layout');
       if (checked('filters')) features.push('left sidebar filters populated dynamically from unique Google Sheet values');
       if (checked('exportBtn')) features.push('CSV export for the currently filtered table');
-      if (checked('aiSummary')) features.push('AI-style weekly interpretation panel with key messages, alerts, and recommended actions based on filtered data');
+      if (checked('aiSummary')) features.push('AI-style interpretation panel with key messages, alerts, and recommended actions based on filtered data');
       if (checked('dataQuality')) features.push('data quality panel highlighting missing dates, invalid coordinates, duplicate IDs, missing status, and incomplete records');
       return features;
     }
 
     function selectedLogic() {
-      const logic = [];
-      if (checked('epidWeek')) logic.push('Epidemiological week and year calculation from relevant date fields');
-      if (checked('notifDelay')) logic.push('Notification timeliness calculation such as diagnosis date to notification/input date');
-      if (checked('regDelay')) logic.push('Registration delay categories such as <7 days, 8–14 days, and >14 days, with configurable thresholds');
-      if (checked('attackRate')) logic.push('Outbreak attack rate calculation using cases divided by exposed population multiplied by 100');
-      if (checked('geoFilter')) logic.push('District, mukim, locality, facility, and institution filtering');
-      if (checked('statusTracking')) logic.push('Operational status tracking such as registered, pending, completed, delayed, cancelled, active, closed, or under investigation');
-      if (checked('clusterDetection')) logic.push('Cluster or locality grouping by place, institution, date range, and case count');
-      if (checked('yoy')) logic.push('Year-on-year comparison for current epid week versus the same epid week in previous years');
-      if (checked('priorityFlag')) logic.push('Priority flags for delayed, incomplete, high-risk, or missing-action records');
-      return logic;
+      return Array.from(document.querySelectorAll('.logic-checkbox:checked')).map(input => input.dataset.text);
     }
 
     function deploymentBlock() {
-      return `\n\nMANDATORY DEPLOYMENT INSTRUCTIONS TO INCLUDE IN YOUR ANSWER:\n\nAfter providing the code, give a beginner-friendly step-by-step deployment guide for Google Apps Script Web App:\n\n1. Prepare Google Sheet\n   - Open the Google Sheet containing the dashboard data.\n   - Confirm the first row contains clean column headers.\n   - Remove merged cells from the data table.\n   - Confirm date fields, status fields, numeric fields, and latitude/longitude fields.\n\n2. Open Apps Script\n   - In Google Sheets, click Extensions > Apps Script.\n   - Rename the project clearly, for example: KKM Dashboard Web App.\n\n3. Create project files\n   - Create or replace Code.gs with the server-side code.\n   - Create an HTML file named Index.\n   - Paste the full Index.html code into the Index file.\n   - Explain exactly where to paste Spreadsheet ID, sheet name, and important variable names.\n\n4. Save and authorize\n   - Click Save.\n   - Run a safe function if needed to trigger authorization.\n   - Review permission screen and allow access to the spreadsheet.\n\n5. Deploy as Web App\n   - Click Deploy > New deployment.\n   - Click the gear icon and choose Web app.\n   - Description: Initial dashboard deployment.\n   - Execute as: Me.\n   - Who has access: Anyone with the link, or Anyone within organisation, depending on data sensitivity.\n   - Click Deploy.\n   - Copy the Web App URL.\n\n6. Test\n   - Open the Web App URL in a browser.\n   - Check KPI cards, filters, charts, map, table, and export button.\n   - Test with empty filters, missing dates, invalid coordinates, and mobile screen size.\n\n7. Update future versions\n   - After editing code, click Deploy > Manage deployments.\n   - Select the existing deployment.\n   - Click Edit.\n   - Choose New version.\n   - Deploy again.\n   - Use the same Web App URL unless a new deployment is created.\n\n8. Security note\n   - Remind me not to expose identifiable patient data publicly.\n   - For sensitive KKM data, recommend access restricted to organisation or anonymised/de-identified data.\n`;
+      return `\n\nMANDATORY DEPLOYMENT INSTRUCTIONS TO INCLUDE IN YOUR ANSWER:\n\nAfter providing the code, give a beginner-friendly step-by-step deployment guide for Google Apps Script Web App:\n\n1. Prepare Google Sheet\n   - Open the Google Sheet containing the dashboard data.\n   - Confirm the first row contains clean column headers.\n   - Remove merged cells from the data table.\n   - Confirm date fields, status fields, numeric fields, and latitude/longitude fields.\n\n2. Open Apps Script\n   - In Google Sheets, click Extensions > Apps Script.\n   - Rename the project clearly, for example: Dashboard Web App.\n\n3. Create project files\n   - Create or replace Code.gs with the server-side code.\n   - Create an HTML file named Index.\n   - Paste the full Index.html code into the Index file.\n   - Explain exactly where to paste Spreadsheet ID, sheet name, and important variable names.\n\n4. Save and authorize\n   - Click Save.\n   - Run a safe function if needed to trigger authorization.\n   - Review permission screen and allow access to the spreadsheet.\n\n5. Deploy as Web App\n   - Click Deploy > New deployment.\n   - Click the gear icon and choose Web app.\n   - Description: Initial dashboard deployment.\n   - Execute as: Me.\n   - Who has access: Anyone with the link, or Anyone within organisation, depending on data sensitivity.\n   - Click Deploy.\n   - Copy the Web App URL.\n\n6. Test\n   - Open the Web App URL in a browser.\n   - Check KPI cards, filters, charts, map, table, and export button.\n   - Test with empty filters, missing dates, invalid coordinates, and mobile screen size.\n\n7. Update future versions\n   - After editing code, click Deploy > Manage deployments.\n   - Select the existing deployment.\n   - Click Edit.\n   - Choose New version.\n   - Deploy again.\n   - Use the same Web App URL unless a new deployment is created.\n\n8. Security note\n   - Do not expose identifiable patient data, student data, staff data, confidential business data, or private organisational data publicly.\n   - For sensitive KKM, hospital, clinic, school, corporate, NGO, or client data, recommend access restricted to the organisation or anonymised/de-identified data.\n`;
     }
 
     function buildSharedContext() {
+      const orgType = getOrgTypeLabel();
+      const orgTypeValue = value('orgType');
       const dashboardType = value('dashboardType');
       const inputType = value('inputType');
       const behaviour = value('behaviour');
       const promptLevel = value('promptLevel');
       const theme = value('theme');
-      const datasetContext = value('datasetContext') || '[Paste Google Sheet ID, sheet name, column names, sample rows, date fields, status fields, latitude/longitude fields, disease/facility/mukim/district variables here]';
+      const datasetContext = value('datasetContext') || '[Paste Google Sheet ID, sheet name, column names, sample rows, date fields, status fields, latitude/longitude fields, facility/department/category/location variables here]';
       const objective = value('objective') || '[Describe the main dashboard objective here]';
       const additionalLogic = value('logic') || 'Use safe date handling, clean JSON serialization, centralised filtering, Chart.js destroy/rebuild logic, and robust missing-value handling.';
       const features = selectedFeatures();
       const logic = selectedLogic();
 
+      const orgGuidance = orgTypeValue === 'kkm'
+        ? 'This is a KKM/public health/hospital/clinic dashboard. Use appropriate healthcare, surveillance, hospital operations, Klinik Kesihatan, or programme-monitoring terminology. Include strong data privacy reminders for patient-related or health-system data.'
+        : 'This is a non-KKM organisational dashboard. Use appropriate business, education, NGO, project, finance, HR, customer, or operational terminology depending on the selected template. Avoid KKM-specific assumptions unless the user explicitly asks for them.';
+
       return {
+        orgType,
+        orgTypeValue,
+        orgGuidance,
         dashboardType,
         inputType,
         behaviour,
@@ -401,7 +561,7 @@
         additionalLogic,
         features,
         logic,
-        sharedContext: `Dashboard type: ${dashboardType}\nData input type: ${inputType}\nDashboard behaviour: ${behaviour}\nPrompt level: ${promptLevel}\nDesign style: ${theme}\n\nDataset context:\n${datasetContext}\n\nMain objective:\n${objective}\n\nSelected components:\n${features.map((f, i) => `${i + 1}. ${f}`).join('\n')}\n\nSelected public health logic:\n${logic.map((l, i) => `${i + 1}. ${l}`).join('\n')}\n\nAdditional special logic:\n${additionalLogic}`
+        sharedContext: `Organisation type: ${orgType}\nDashboard type: ${dashboardType}\nData input type: ${inputType}\nDashboard behaviour: ${behaviour}\nPrompt level: ${promptLevel}\nDesign style: ${theme}\n\nOrganisation-specific guidance:\n${orgGuidance}\n\nDataset context:\n${datasetContext}\n\nMain objective:\n${objective}\n\nSelected components:\n${features.map((f, i) => `${i + 1}. ${f}`).join('\n')}\n\nSelected domain logic:\n${logic.map((l, i) => `${i + 1}. ${l}`).join('\n')}\n\nAdditional special logic:\n${additionalLogic}`
       };
     }
 
@@ -409,15 +569,19 @@
       const ctx = buildSharedContext();
       const mode = value('mode');
 
-      const phase1 = `Act as an expert public health data analyst, KKM surveillance officer, data engineer, and Google Apps Script dashboard architect.\n\nI want to build a Google Apps Script Web App dashboard.\n\n${ctx.sharedContext}\n\nDo not write the full dashboard code yet. First, analyze the dataset and produce:\n1. A clean list of all expected columns and data types.\n2. Identification of date, number, category, free-text, latitude, and longitude fields.\n3. Suggested KPI cards.\n4. Suggested filters.\n5. Suggested charts.\n6. Suggested map layer logic, if coordinates exist.\n7. Suggested data quality checks.\n8. Potential problems such as missing values, inconsistent spellings, duplicate IDs, invalid coordinates, or mixed date formats.\n9. A proposed Google Apps Script project architecture using Code.gs and Index.html.\n\nEnd with a clear summary of assumptions before code generation.`;
+      const expertRole = ctx.orgTypeValue === 'kkm'
+        ? 'expert Google Apps Script developer, public health data analyst, KKM dashboard architect, hospital/clinic operations analyst, and UI/UX designer'
+        : 'expert Google Apps Script developer, organisational data analyst, dashboard architect, operations analyst, and UI/UX designer';
 
-      const phase2 = `Act as an expert Google Apps Script developer and KKM dashboard UI/UX designer.\n\nBuild a complete Google Apps Script Web App dashboard based on the following specification:\n\n${ctx.sharedContext}\n\nPlease provide complete copy-paste-ready code with clear separation:\n\nFILE 1: Code.gs\n- Implement doGet() using HtmlService.\n- Implement a server-side function to fetch rows from Google Sheets.\n- Convert spreadsheet rows into an array of objects using the first row as headers.\n- Convert native Google Sheets Date objects into safe dd/MM/yyyy strings before returning to the frontend.\n- Add defensive handling for blank cells, missing headers, and empty sheets.\n- Return clean JSON-safe data to the client.\n\nFILE 2: Index.html\n- Build a responsive dashboard UI.\n- Use Tailwind CSS via CDN.\n- Use Chart.js via CDN.\n- Use Leaflet.js via CDN if map is selected.\n- Include sidebar filters, KPI cards, charts, searchable table, map, export button, and data quality panel according to the selected components.\n- Use global dataset cache and centralised applyFilters() function.\n- Destroy existing Chart.js instances before redrawing.\n- Use map.fitBounds() after filter updates if markers exist.\n- Handle empty filtered results gracefully.\n\nAlso include clear comments in the code showing where to change Spreadsheet ID, sheet name, and column names.` + deploymentBlock();
+      const phase1 = `Act as an ${expertRole}.\n\nI want to build a Google Apps Script Web App dashboard.\n\n${ctx.sharedContext}\n\nDo not write the full dashboard code yet. First, analyze the dataset and produce:\n1. A clean list of all expected columns and data types.\n2. Identification of date, number, category, free-text, latitude, and longitude fields.\n3. Suggested KPI cards.\n4. Suggested filters.\n5. Suggested charts.\n6. Suggested map layer logic, if coordinates exist.\n7. Suggested data quality checks.\n8. Potential problems such as missing values, inconsistent spellings, duplicate IDs, invalid coordinates, or mixed date formats.\n9. A proposed Google Apps Script project architecture using Code.gs and Index.html.\n\nEnd with a clear summary of assumptions before code generation.`;
 
-      const phase3 = `Act as an expert Leaflet.js and Google Apps Script dashboard developer.\n\nI already have or will have an Apps Script dashboard. Please upgrade it with a Leaflet geospatial map layer.\n\n${ctx.sharedContext}\n\nMap requirements:\n1. Use Leaflet.js with OpenStreetMap tiles.\n2. Detect valid latitude and longitude values from the dataset.\n3. Render circular markers.\n4. Colour-code markers by the most relevant status/risk/category variable.\n5. Add HTML popups with important fields such as case ID, facility, district, mukim, disease, status, and dates.\n6. Update markers whenever filters change.\n7. Use map.fitBounds() so the map auto-zooms to active filtered records.\n8. Show a friendly empty-state if there are no valid coordinates.\n\nProvide the exact HTML, CSS, and JavaScript changes needed inside Index.html, and explain where to insert them.`;
+      const phase2 = `Act as an ${expertRole}.\n\nBuild a complete Google Apps Script Web App dashboard based on the following specification:\n\n${ctx.sharedContext}\n\nPlease provide complete copy-paste-ready code with clear separation:\n\nFILE 1: Code.gs\n- Implement doGet() using HtmlService.\n- Implement a server-side function to fetch rows from Google Sheets.\n- Convert spreadsheet rows into an array of objects using the first row as headers.\n- Convert native Google Sheets Date objects into safe dd/MM/yyyy strings before returning to the frontend.\n- Add defensive handling for blank cells, missing headers, and empty sheets.\n- Return clean JSON-safe data to the client.\n\nFILE 2: Index.html\n- Build a responsive dashboard UI.\n- Use Tailwind CSS via CDN.\n- Use Chart.js via CDN.\n- Use Leaflet.js via CDN if map is selected.\n- Include sidebar filters, KPI cards, charts, searchable table, map, export button, and data quality panel according to the selected components.\n- Use global dataset cache and centralised applyFilters() function.\n- Destroy existing Chart.js instances before redrawing.\n- Use map.fitBounds() after filter updates if markers exist.\n- Handle empty filtered results gracefully.\n\nAlso include clear comments in the code showing where to change Spreadsheet ID, sheet name, and column names.` + deploymentBlock();
+
+      const phase3 = `Act as an expert Leaflet.js and Google Apps Script dashboard developer.\n\nI already have or will have an Apps Script dashboard. Please upgrade it with a Leaflet geospatial map layer.\n\n${ctx.sharedContext}\n\nMap requirements:\n1. Use Leaflet.js with OpenStreetMap tiles.\n2. Detect valid latitude and longitude values from the dataset.\n3. Render circular markers.\n4. Colour-code markers by the most relevant status/risk/category variable.\n5. Add HTML popups with important fields such as ID, location, facility/site/branch, department, category, status, and dates.\n6. Update markers whenever filters change.\n7. Use map.fitBounds() so the map auto-zooms to active filtered records.\n8. Show a friendly empty-state if there are no valid coordinates.\n\nProvide the exact HTML, CSS, and JavaScript changes needed inside Index.html, and explain where to insert them.`;
 
       const phase4 = `Act as an expert frontend JavaScript architect for Google Apps Script Web App dashboards.\n\nI want to optimise the dashboard with clean global state management and cross-filtering.\n\n${ctx.sharedContext}\n\nPlease implement or refactor the client-side JavaScript to include:\n1. rawData global cache.\n2. filteredData global state.\n3. filterConfig object.\n4. initDashboard() after google.script.run successfully returns data.\n5. populateFilters() using unique values from the dataset.\n6. applyFilters() as the only central filtering pipeline.\n7. updateKPIs(), updateCharts(), updateMap(), updateTable(), updateDataQualityPanel().\n8. applyTableSearch() that searches within the already-filtered subset.\n9. Chart.js lifecycle management using .destroy() before redraw.\n10. Defensive handling for missing values, blank filters, invalid dates, invalid coordinates, and empty results.\n\nProvide clean, reusable JavaScript code for Index.html.`;
 
-      const deployPrompt = `Act as a Google Apps Script deployment coach.\n\nI am building this dashboard:\n\n${ctx.sharedContext}\n\nGive me a beginner-friendly, step-by-step guide to deploy this as a Google Apps Script Web App from a Google Sheet.\n\nThe guide must include:\n1. How to prepare the Google Sheet.\n2. How to open Apps Script.\n3. How to create Code.gs and Index.html.\n4. Where to paste the code.\n5. How to save and authorize.\n6. How to deploy as Web App.\n7. What to choose for Execute as and Who has access.\n8. How to test the Web App link.\n9. How to update the deployment after editing the code.\n10. Security advice for sensitive KKM or patient-related data.`;
+      const deployPrompt = `Act as a Google Apps Script deployment coach.\n\nI am building this dashboard:\n\n${ctx.sharedContext}\n\nGive me a beginner-friendly, step-by-step guide to deploy this as a Google Apps Script Web App from a Google Sheet.\n\nThe guide must include:\n1. How to prepare the Google Sheet.\n2. How to open Apps Script.\n3. How to create Code.gs and Index.html.\n4. Where to paste the code.\n5. How to save and authorize.\n6. How to deploy as Web App.\n7. What to choose for Execute as and Who has access.\n8. How to test the Web App link.\n9. How to update the deployment after editing the code.\n10. Security advice for sensitive KKM, patient, staff, student, business, or organisational data.`;
 
       const debugPrompt = `Act as an expert Google Apps Script debugger and dashboard engineer.\n\nI have an existing Apps Script Web App dashboard with an error or feature issue.\n\nDashboard context:\n${ctx.sharedContext}\n\nI will paste my Code.gs, Index.html, browser console error, or Apps Script error log.\n\nPlease debug systematically:\n1. Identify the likely root cause.\n2. Explain the issue in simple language.\n3. Provide corrected code blocks only for the affected sections.\n4. Check for common Apps Script dashboard problems: Date object JSON failure, wrong sheet name, wrong Spreadsheet ID, missing headers, google.script.run async issue, Chart.js duplicate canvas redraw, Leaflet map not resizing, CORS/API issue, and deployment version not updated.\n5. Provide a short checklist to test after fixing.`;
 
@@ -431,7 +595,7 @@
       if (mode === 'debug') prompt = debugPrompt;
 
       if (mode === 'full') {
-        prompt = `Act as an expert Google Apps Script developer, public health data analyst, KKM dashboard architect, and UI/UX designer.\n\nI want you to generate a complete Google Apps Script Web App dashboard.\n\n${ctx.sharedContext}\n\nPlease produce a complete production-grade solution using this structure:\n\nPHASE 1 — Dataset understanding and assumptions\n- Analyze the dataset structure based on the provided fields.\n- Identify date, numeric, categorical, text, latitude, and longitude columns.\n- Recommend KPI cards, filters, charts, table columns, map popups, and data quality checks.\n- State assumptions clearly before coding.\n\nPHASE 2 — Google Apps Script server-side file\nProvide FILE 1: Code.gs\n- doGet() using HtmlService.\n- getDashboardData() or similar function to read the Google Sheet.\n- Use SpreadsheetApp.openById() or getActiveSpreadsheet(), depending on the input context.\n- Read the selected sheet by name.\n- Convert the first row into headers.\n- Convert each row into an object.\n- Convert native Date objects to dd/MM/yyyy strings before JSON serialization.\n- Handle blank cells, empty rows, duplicate headers, missing sheets, and empty data safely.\n\nPHASE 3 — Client-side dashboard file\nProvide FILE 2: Index.html\n- Use Tailwind CSS via CDN.\n- Use Chart.js via CDN.\n- Use Leaflet.js via CDN if map is selected.\n- Build a responsive layout with sidebar filters and main dashboard canvas.\n- Include selected components: KPI cards, charts, map, table, export, AI summary, and data quality panel as selected.\n- Use the selected design style.\n- Include loading state, empty state, and error state.\n\nPHASE 4 — Interactivity and global state\n- Use rawData global cache.\n- Use filteredData global state.\n- Build populateFilters(), applyFilters(), updateKPIs(), updateCharts(), updateMap(), updateTable(), and updateDataQualityPanel().\n- Ensure all filters update every dashboard element at the same time.\n- Keep table search working within the current filtered dataset.\n- Destroy Chart.js instances before redrawing.\n- Use map.fitBounds() after marker refresh.\n\nPHASE 5 — Public health calculations\nImplement the selected public health logic where possible:\n${ctx.logic.map((l, i) => `${i + 1}. ${l}`).join('\n')}\n\nPHASE 6 — Code comments and customisation points\nClearly mark where I need to edit:\n- Spreadsheet ID.\n- Sheet name.\n- Date column names.\n- Status column names.\n- Latitude and longitude column names.\n- KPI definitions.\n- Delay thresholds.\n- Colour mapping.\n\nPHASE 7 — Deployment\nInclude detailed beginner-friendly deployment instructions for Google Apps Script Web App.\n\nImportant technical requirements:\n- Avoid JSON serialization errors caused by native Google Sheets Date objects.\n- Use defensive coding for missing values and inconsistent data.\n- Ensure the dashboard can be redeployed after code edits.\n- Include security reminders for KKM or patient-related data.\n- Do not expose identifiable patient data in a public Web App.` + deploymentBlock();
+        prompt = `Act as an ${expertRole}.\n\nI want you to generate a complete Google Apps Script Web App dashboard.\n\n${ctx.sharedContext}\n\nPlease produce a complete production-grade solution using this structure:\n\nPHASE 1 — Dataset understanding and assumptions\n- Analyze the dataset structure based on the provided fields.\n- Identify date, numeric, categorical, text, latitude, and longitude columns.\n- Recommend KPI cards, filters, charts, table columns, map popups, and data quality checks.\n- State assumptions clearly before coding.\n\nPHASE 2 — Google Apps Script server-side file\nProvide FILE 1: Code.gs\n- doGet() using HtmlService.\n- getDashboardData() or similar function to read the Google Sheet.\n- Use SpreadsheetApp.openById() or getActiveSpreadsheet(), depending on the input context.\n- Read the selected sheet by name.\n- Convert the first row into headers.\n- Convert each row into an object.\n- Convert native Date objects to dd/MM/yyyy strings before JSON serialization.\n- Handle blank cells, empty rows, duplicate headers, missing sheets, and empty data safely.\n\nPHASE 3 — Client-side dashboard file\nProvide FILE 2: Index.html\n- Use Tailwind CSS via CDN.\n- Use Chart.js via CDN.\n- Use Leaflet.js via CDN if map is selected.\n- Build a responsive layout with sidebar filters and main dashboard canvas.\n- Include selected components: KPI cards, charts, map, table, export, AI summary, and data quality panel as selected.\n- Use the selected design style.\n- Include loading state, empty state, and error state.\n\nPHASE 4 — Interactivity and global state\n- Use rawData global cache.\n- Use filteredData global state.\n- Build populateFilters(), applyFilters(), updateKPIs(), updateCharts(), updateMap(), updateTable(), and updateDataQualityPanel().\n- Ensure all filters update every dashboard element at the same time.\n- Keep table search working within the current filtered dataset.\n- Destroy Chart.js instances before redrawing.\n- Use map.fitBounds() after marker refresh.\n\nPHASE 5 — Domain calculations\nImplement the selected domain logic where possible:\n${ctx.logic.map((l, i) => `${i + 1}. ${l}`).join('\n')}\n\nPHASE 6 — Code comments and customisation points\nClearly mark where I need to edit:\n- Spreadsheet ID.\n- Sheet name.\n- Date column names.\n- Status column names.\n- Latitude and longitude column names.\n- KPI definitions.\n- Threshold definitions.\n- Colour mapping.\n- Organisation-specific wording.\n\nPHASE 7 — Deployment\nInclude detailed beginner-friendly deployment instructions for Google Apps Script Web App.\n\nImportant technical requirements:\n- Avoid JSON serialization errors caused by native Google Sheets Date objects.\n- Use defensive coding for missing values and inconsistent data.\n- Ensure the dashboard can be redeployed after code edits.\n- Include security reminders for KKM, patient-related, student, staff, business, or private organisational data.\n- Do not expose identifiable or confidential data in a public Web App.` + deploymentBlock();
       }
 
       document.getElementById('output').value = prompt;
@@ -456,12 +620,15 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'kkm-appscript-dashboard-prompt.txt';
+      a.download = 'appscript-dashboard-prompt.txt';
       a.click();
       URL.revokeObjectURL(url);
     }
 
     function resetForm() {
+      document.getElementById('orgType').value = 'kkm';
+      updateDashboardTypeOptions();
+
       document.getElementById('dashboardType').selectedIndex = 0;
       document.getElementById('inputType').selectedIndex = 0;
       document.getElementById('behaviour').selectedIndex = 0;
@@ -472,20 +639,20 @@
       document.getElementById('logic').value = '';
       document.getElementById('mode').value = 'full';
 
-      ['kpi', 'charts', 'map', 'table', 'filters', 'exportBtn', 'dataQuality', 'epidWeek', 'notifDelay', 'regDelay', 'geoFilter', 'statusTracking', 'priorityFlag'].forEach(id => {
+      ['kpi', 'charts', 'map', 'table', 'filters', 'exportBtn', 'dataQuality'].forEach(id => {
         document.getElementById(id).checked = true;
       });
 
-      ['aiSummary', 'attackRate', 'clusterDetection', 'yoy'].forEach(id => {
+      ['aiSummary'].forEach(id => {
         document.getElementById(id).checked = false;
       });
 
+      renderLogicPresets();
       updatePreviews();
       generatePrompt();
     }
 
-    updatePreviews();
-    generatePrompt();
+    updateDashboardTypeOptions();
   </script>
 </body>
 </html>
