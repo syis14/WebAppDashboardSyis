@@ -152,7 +152,7 @@
             AI Dashboard Prompt Generator
           </h1>
           <p class="mt-3 text-slate-300 max-w-4xl">
-            Generate structured prompts that help AI analyze your dataset, design the best dashboard, and build a dynamic Google Apps Script Web App using Google Sheets, HTML, Chart.js, Tailwind CSS, and optional Leaflet maps.
+            Generate privacy-first prompts that help AI analyze your dataset structure, design the best dashboard, and build a dynamic Google Apps Script Web App using Google Sheets, HTML, Chart.js, Tailwind CSS, and optional Leaflet maps.
           </p>
         </div>
 
@@ -227,22 +227,38 @@
               <p id="inputTypePreview" class="helper-text"></p>
             </div>
 
-            <!-- Dataset Context -->
+            <!-- Dataset Connection -->
             <div>
-              <label class="field-label" for="datasetContext">Google Sheet / Dataset Context</label>
-              <textarea id="datasetContext" rows="4" class="form-control" placeholder="Example:\nSheet ID: 1Abc...\nTab name: Data\nThis dataset contains staff demographic, education, workplace, SKT, training, and digital skill information.\nImportant columns: Gender, Facility, Unit, Training_Status, SKT_Status..."></textarea>
-              <p class="helper-text">Use this box for Sheet ID, tab name, column names, and short description of your dataset.</p>
+              <label class="field-label" for="datasetContext">Google Sheet / Dataset Connection</label>
+              <textarea id="datasetContext" rows="3" class="form-control" placeholder="Example:
+Sheet ID or link: 1Abc...
+Tab name: Data
+Short description: Staff monitoring dataset for training, SKT, facility, unit, and digital skill readiness."></textarea>
+              <p class="helper-text">Paste the Sheet ID/link, tab name, and short dataset description. Do not paste real row-level data here.</p>
             </div>
 
-            <!-- CSV Sample -->
+            <!-- Column Headers -->
             <div>
-              <label class="field-label" for="csvSample">CSV Sample / First 20–50 Rows</label>
-              <textarea id="csvSample" rows="6" class="form-control" placeholder="Paste the header row and first 20–50 anonymised rows here. Remove names, IC/passport number, phone number, email, staff ID, patient ID, student ID, exact address, exact date of birth, and confidential remarks before pasting."></textarea>
-              <p class="helper-text">This helps AI suggest dashboard elements based on real data instead of guessing from the title alone.</p>
+              <label class="field-label" for="columnHeaders">Dataset Structure / Column Headers</label>
+              <textarea id="columnHeaders" rows="4" class="form-control" placeholder="Recommended: paste column headers only.
+Example:
+Staff_ID, Jantina, Status_Perkahwinan, Tahap_Pendidikan, Kategori_Jawatan, Jawatan, Negeri, Daerah, Jenis_Fasiliti, Unit_Program, Status_SKT, Status_Latihan, Kemahiran_Digital"></textarea>
+              <p class="helper-text">Safest public option: column names are usually enough for AI to suggest KPI cards, filters, charts, and table columns.</p>
+            </div>
+
+            <!-- Data Dictionary -->
+            <div>
+              <label class="field-label" for="dataDictionary">Optional Data Dictionary / Category Notes</label>
+              <textarea id="dataDictionary" rows="3" class="form-control" placeholder="Optional. Explain important fields or categories.
+Example:
+Status_SKT = Completed / Pending / Not Applicable
+Kemahiran_Digital = Beginner / Intermediate / Advanced
+Tarikh_Latihan = date of latest training attended"></textarea>
+              <p class="helper-text">Use this instead of sample rows when AI needs to understand category meanings, status values, or KPI definitions.</p>
             </div>
 
             <div class="rounded-2xl border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
-              <strong>Privacy reminder:</strong> Do not paste identifiable, confidential, patient, student, staff, client, or business-sensitive data into AI. Use anonymised samples only. Do not deploy sensitive dashboards as public links unless the data is approved and de-identified.
+              <strong>Privacy-first input:</strong> For public use, paste column headers and field meanings only. Do not paste names, IC/passport numbers, MRN, patient IDs, staff IDs, student IDs, phone numbers, emails, addresses, exact dates of birth, private remarks, or confidential row-level records. Do not deploy sensitive dashboards as public links unless the data is approved and de-identified.
             </div>
 
             <!-- Objective -->
@@ -289,6 +305,13 @@
             <div class="advanced-block space-y-5">
               <div class="border-t border-slate-200 pt-5">
                 <h3 class="text-sm font-black uppercase tracking-wide text-slate-500">Advanced Options</h3>
+              </div>
+
+              <!-- Optional anonymised sample rows -->
+              <div>
+                <label class="field-label" for="anonymisedSampleRows">Optional Anonymised Sample Rows — Demo Data Only</label>
+                <textarea id="anonymisedSampleRows" rows="4" class="form-control" placeholder="Advanced optional only. Paste 3–5 fully anonymised demo rows if column headers are not enough. Never paste real identifiable or confidential records."></textarea>
+                <p class="helper-text">Leave this blank for most public use. Column headers and data dictionary are usually safer and sufficient.</p>
               </div>
 
               <!-- Behaviour and coding detail -->
@@ -474,7 +497,7 @@
       { value: 'analyze', label: 'Step 1: Analyze Dataset First Only — No Code', button: 'Generate Dataset Analysis Prompt', desc: 'Best first step. AI reviews your dataset, detects column types, checks data quality, and recommends dashboard elements.' },
       { value: 'blueprint', label: 'Step 2: Dashboard Blueprint Only — No Code', button: 'Generate Dashboard Blueprint Prompt', desc: 'Use after dataset analysis. AI creates KPI, filter, chart, table, layout, and privacy blueprint.' },
       { value: 'build', label: 'Step 3: Apps Script Web App Build Prompt', button: 'Generate Apps Script Build Prompt', desc: 'Use after the blueprint is accepted. AI generates Code.gs, Index.html, and deployment steps.' },
-      { value: 'full', label: 'Full Workflow Prompt — Analyze + Blueprint + Build', button: 'Generate Full Workflow Prompt', desc: 'Comprehensive one-shot prompt. Powerful, but may be long if you paste a large CSV sample.' },
+      { value: 'full', label: 'Full Workflow Prompt — Analyze + Blueprint + Build', button: 'Generate Full Workflow Prompt', desc: 'Comprehensive one-shot prompt. Powerful, but may be long if you add detailed dataset notes.' },
       { value: 'phase4', label: 'Improve Existing Dashboard — Filters & Cross-filtering', button: 'Generate Improvement Prompt', desc: 'Refactor client-side JavaScript with global state, filters, charts, table, and map updates.' },
       { value: 'map', label: 'Add Leaflet Map Only', button: 'Generate Map Integration Prompt', desc: 'Use only when your dataset has latitude and longitude columns.' },
       { value: 'deploy', label: 'Deployment Guide Prompt Only', button: 'Generate Deployment Prompt', desc: 'Get step-by-step Apps Script web app deployment instructions.' },
@@ -644,8 +667,10 @@
       const userSkillLevel = value('participantLevel');
       const outputLanguage = value('outputLanguage');
       const theme = value('theme') || 'Clean Professional — white, blue, teal, official meeting style';
-      const datasetContext = value('datasetContext') || '[Paste Google Sheet ID, sheet name, column names, sample rows, date fields, status fields, latitude/longitude fields, facility/department/category/location variables here]';
-      const csvSample = value('csvSample') || '[Paste anonymised CSV sample here, including header row and first 20–50 rows]';
+      const datasetContext = value('datasetContext') || '[Paste Google Sheet ID/link, sheet tab name, and short dataset description here]';
+      const columnHeaders = value('columnHeaders') || '[Paste column headers only here]';
+      const dataDictionary = value('dataDictionary') || '[Optional: explain key fields, status values, categories, KPI definitions, date fields, and location fields]';
+      const anonymisedSampleRows = value('anonymisedSampleRows') || 'Not provided. Use column headers and data dictionary only; do not require row-level data.';
       const objective = value('objective') || '[Describe the main dashboard objective here]';
       const decisionQuestion = value('decisionQuestion') || '[Describe the main decision or management question this dashboard should support]';
       const additionalLogic = value('logic') || 'Use safe date handling, clean JSON serialization, centralised filtering, Chart.js destroy/rebuild logic, and robust missing-value handling.';
@@ -656,7 +681,44 @@
         ? 'This is a healthcare/public health/hospital/clinic dashboard. Use appropriate healthcare, service, surveillance, hospital operations, clinic operations, or programme-monitoring terminology. Include strong data privacy reminders for patient-related, staff, or health-system data.'
         : 'This is a general organisation dashboard. Use appropriate business, education, NGO, project, finance, HR, customer, or operational terminology depending on the selected template. Avoid healthcare-specific assumptions unless the user explicitly asks for them.';
 
-      const sharedContext = `Organisation / sector type: ${orgType}\nDashboard type: ${dashboardType}\nData input type: ${inputType}\nDashboard behaviour: ${behaviour}\nUser skill level: ${userSkillLevel}\nCoding detail level: ${codingDetail}\nOutput language: ${outputLanguage}\nDesign style: ${theme}\n\nOrganisation-specific guidance:\n${orgGuidance}\n\nDataset context:\n${datasetContext}\n\nCSV sample / data sample:\n${csvSample}\n\nMain dashboard objective:\n${objective}\n\nMain decision / management question:\n${decisionQuestion}\n\nSelected components:\n${features.length ? features.map((f, i) => `${i + 1}. ${f}`).join('\n') : 'No specific components selected. Recommend only the components suitable for the dataset.'}\n\nSelected domain logic:\n${logic.length ? logic.map((l, i) => `${i + 1}. ${l}`).join('\n') : 'No domain logic selected. Recommend suitable logic based on the dataset.'}\n\nAdditional special logic:\n${additionalLogic}`;
+      const sharedContext = `Organisation / sector type: ${orgType}
+Dashboard type: ${dashboardType}
+Data input type: ${inputType}
+Dashboard behaviour: ${behaviour}
+User skill level: ${userSkillLevel}
+Coding detail level: ${codingDetail}
+Output language: ${outputLanguage}
+Design style: ${theme}
+
+Organisation-specific guidance:
+${orgGuidance}
+
+Google Sheet / dataset connection:
+${datasetContext}
+
+Dataset structure / column headers only:
+${columnHeaders}
+
+Optional data dictionary / category notes:
+${dataDictionary}
+
+Optional anonymised sample rows, if provided:
+${anonymisedSampleRows}
+
+Main dashboard objective:
+${objective}
+
+Main decision / management question:
+${decisionQuestion}
+
+Selected components:
+${features.length ? features.map((f, i) => `${i + 1}. ${f}`).join('\\n') : 'No specific components selected. Recommend only the components suitable for the dataset.'}
+
+Selected domain logic:
+${logic.length ? logic.map((l, i) => `${i + 1}. ${l}`).join('\\n') : 'No domain logic selected. Recommend suitable logic based on the dataset.'}
+
+Additional special logic:
+${additionalLogic}`;
 
       return {
         orgType,
@@ -670,7 +732,9 @@
         outputLanguage,
         theme,
         datasetContext,
-        csvSample,
+        columnHeaders,
+        dataDictionary,
+        anonymisedSampleRows,
         objective,
         decisionQuestion,
         additionalLogic,
@@ -688,7 +752,14 @@
         ? 'expert dashboard analyst, Google Apps Script developer, healthcare/public health data analyst, operations analyst, and UI/UX designer'
         : 'expert dashboard analyst, Google Apps Script developer, organisational data analyst, operations analyst, and UI/UX designer';
 
-      const globalSafety = `Important rules:\n- Analyze the dataset first before recommending dashboard elements.\n- Use only the actual column names found in the dataset context or CSV sample. Do not invent column names.\n- If the dataset structure is unclear, state the uncertainty and ask for the missing column meaning before generating code.\n- If a requested KPI needs a missing column, mark it as optional and suggest a fallback.\n- Identify sensitive fields that should be hidden, anonymised, or excluded from public dashboards.\n- Keep the output suitable for the selected user skill level and output language.`;
+      const globalSafety = `Important rules:
+- Analyze the dataset structure first before recommending dashboard elements.
+- Use only the actual column names found in the column headers, dataset context, data dictionary, or optional anonymised sample rows. Do not invent column names.
+- Do not require row-level data. Work from column headers and data dictionary whenever possible.
+- If the dataset structure is unclear, state the uncertainty and ask for the missing column meaning before generating code.
+- If a requested KPI needs a missing column, mark it as optional and suggest a fallback.
+- Identify sensitive fields that should be hidden, anonymised, or excluded from public dashboards.
+- Keep the output suitable for the selected user skill level and output language.`;
 
       const analysisPrompt = `Act as an ${expertRole}.\n\nI want to build a dashboard, but do not generate code yet.\n\nFirst, analyze my dataset and recommend the best dashboard display.\n\n${ctx.sharedContext}\n\n${dashboardThinkingFramework()}\n\nPlease analyze:\n1. Dataset structure.\n2. Column names and likely meaning.\n3. Column type: ID, categorical, numerical, date/time, status, text, location, coordinate, or calculated field.\n4. Missing values and data quality problems.\n5. Duplicate records or duplicate IDs.\n6. Inconsistent category spelling.\n7. Sensitive or confidential fields that should not be shown publicly.\n8. Best KPI cards for this dataset.\n9. Best filters for this dataset.\n10. Best charts for this dataset.\n11. Best table columns.\n12. Best drill-down view.\n13. Best data quality panel.\n14. Best dashboard layout.\n\nDo not write Apps Script code yet.\n\nEnd your answer with a recommended dashboard blueprint in table format.\n\n${globalSafety}`;
 
@@ -696,7 +767,7 @@
 
       const buildPrompt = `Act as an ${expertRole}.\n\nBuild a complete Google Apps Script Web App dashboard based on the following approved specification.\n\n${ctx.sharedContext}\n\nPlease provide complete copy-paste-ready code with clear separation.\n\nFILE 1: Code.gs\n- Implement doGet() using HtmlService.\n- Implement getDashboardData() or similar function to read rows from Google Sheets.\n- Use SpreadsheetApp.openById() when a Sheet ID is provided.\n- Read the selected sheet by name.\n- Convert spreadsheet rows into an array of objects using the first row as headers.\n- Convert native Google Sheets Date objects into safe dd/MM/yyyy strings before returning to the frontend.\n- Add defensive handling for blank cells, missing headers, duplicate headers, empty rows, missing sheets, and empty datasets.\n- Return clean JSON-safe data to the client.\n\nFILE 2: Index.html\n- Build a responsive dashboard UI.\n- Use Tailwind CSS via CDN.\n- Use Chart.js via CDN.\n- Use Leaflet.js via CDN only if a map is selected and valid coordinates exist.\n- Include KPI cards, filters, charts, searchable table, export button, and data quality panel according to the selected components and dataset suitability.\n- Use global dataset cache and centralised applyFilters() function.\n- Destroy existing Chart.js instances before redrawing.\n- Use map.fitBounds() only when map markers exist.\n- Handle empty filtered results gracefully.\n- Use only actual column names from the dataset.\n- Add fallback handling if optional columns are missing.\n\nAlso include clear comments in the code showing where to change Spreadsheet ID, sheet name, column names, KPI definitions, thresholds, and colour mapping.\n\n${globalSafety}` + deploymentBlock();
 
-      const fullPrompt = `Act as an ${expertRole}.\n\nI want you to generate a complete Google Apps Script Web App dashboard.\n\n${ctx.sharedContext}\n\nPlease produce a complete production-grade solution using this workflow.\n\nPHASE 1 — Dataset understanding and assumptions\n- Analyze the dataset structure based on the provided fields and CSV sample.\n- Identify date, numeric, categorical, text, location, latitude, and longitude columns.\n- Recommend KPI cards, filters, charts, table columns, map logic if suitable, and data quality checks.\n- State assumptions clearly before coding.\n\nPHASE 2 — Dashboard blueprint\n- Provide dashboard title, objective, target users, KPIs, filters, charts, table, drill-down list, and layout.\n- Identify required, optional, and missing fields.\n- Identify sensitive fields to hide.\n\nPHASE 3 — Google Apps Script server-side file\nProvide FILE 1: Code.gs\n- doGet() using HtmlService.\n- getDashboardData() or similar function to read the Google Sheet.\n- Use SpreadsheetApp.openById() or getActiveSpreadsheet(), depending on the input context.\n- Read the selected sheet by name.\n- Convert the first row into headers.\n- Convert each row into an object.\n- Convert native Date objects to dd/MM/yyyy strings before JSON serialization.\n- Handle blank cells, empty rows, duplicate headers, missing sheets, and empty data safely.\n\nPHASE 4 — Client-side dashboard file\nProvide FILE 2: Index.html\n- Use Tailwind CSS via CDN.\n- Use Chart.js via CDN.\n- Use Leaflet.js via CDN only if map is selected and valid coordinates exist.\n- Build a responsive layout with filters and main dashboard canvas.\n- Include selected components based on dataset suitability.\n- Use the selected design style.\n- Include loading state, empty state, and error state.\n\nPHASE 5 — Interactivity and global state\n- Use rawData global cache.\n- Use filteredData global state.\n- Build populateFilters(), applyFilters(), updateKPIs(), updateCharts(), updateMap(), updateTable(), and updateDataQualityPanel().\n- Ensure all filters update every dashboard element at the same time.\n- Keep table search working within the current filtered dataset.\n- Destroy Chart.js instances before redrawing.\n- Use map.fitBounds() only when markers exist.\n\nPHASE 6 — Domain calculations\nImplement the selected domain logic where possible:\n${ctx.logic.length ? ctx.logic.map((l, i) => `${i + 1}. ${l}`).join('\n') : 'Recommend suitable domain logic based on the dataset.'}\n\nPHASE 7 — Code comments and customisation points\nClearly mark where I need to edit:\n- Spreadsheet ID.\n- Sheet name.\n- Date column names.\n- Status column names.\n- Latitude and longitude column names, if used.\n- KPI definitions.\n- Threshold definitions.\n- Colour mapping.\n- Organisation-specific wording.\n\n${globalSafety}` + deploymentBlock();
+      const fullPrompt = `Act as an ${expertRole}.\n\nI want you to generate a complete Google Apps Script Web App dashboard.\n\n${ctx.sharedContext}\n\nPlease produce a complete production-grade solution using this workflow.\n\nPHASE 1 — Dataset understanding and assumptions\n- Analyze the dataset structure based on the provided Sheet information, column headers, data dictionary, and optional anonymised sample rows if provided.\n- Identify date, numeric, categorical, text, location, latitude, and longitude columns.\n- Recommend KPI cards, filters, charts, table columns, map logic if suitable, and data quality checks.\n- State assumptions clearly before coding.\n\nPHASE 2 — Dashboard blueprint\n- Provide dashboard title, objective, target users, KPIs, filters, charts, table, drill-down list, and layout.\n- Identify required, optional, and missing fields.\n- Identify sensitive fields to hide.\n\nPHASE 3 — Google Apps Script server-side file\nProvide FILE 1: Code.gs\n- doGet() using HtmlService.\n- getDashboardData() or similar function to read the Google Sheet.\n- Use SpreadsheetApp.openById() or getActiveSpreadsheet(), depending on the input context.\n- Read the selected sheet by name.\n- Convert the first row into headers.\n- Convert each row into an object.\n- Convert native Date objects to dd/MM/yyyy strings before JSON serialization.\n- Handle blank cells, empty rows, duplicate headers, missing sheets, and empty data safely.\n\nPHASE 4 — Client-side dashboard file\nProvide FILE 2: Index.html\n- Use Tailwind CSS via CDN.\n- Use Chart.js via CDN.\n- Use Leaflet.js via CDN only if map is selected and valid coordinates exist.\n- Build a responsive layout with filters and main dashboard canvas.\n- Include selected components based on dataset suitability.\n- Use the selected design style.\n- Include loading state, empty state, and error state.\n\nPHASE 5 — Interactivity and global state\n- Use rawData global cache.\n- Use filteredData global state.\n- Build populateFilters(), applyFilters(), updateKPIs(), updateCharts(), updateMap(), updateTable(), and updateDataQualityPanel().\n- Ensure all filters update every dashboard element at the same time.\n- Keep table search working within the current filtered dataset.\n- Destroy Chart.js instances before redrawing.\n- Use map.fitBounds() only when markers exist.\n\nPHASE 6 — Domain calculations\nImplement the selected domain logic where possible:\n${ctx.logic.length ? ctx.logic.map((l, i) => `${i + 1}. ${l}`).join('\n') : 'Recommend suitable domain logic based on the dataset.'}\n\nPHASE 7 — Code comments and customisation points\nClearly mark where I need to edit:\n- Spreadsheet ID.\n- Sheet name.\n- Date column names.\n- Status column names.\n- Latitude and longitude column names, if used.\n- KPI definitions.\n- Threshold definitions.\n- Colour mapping.\n- Organisation-specific wording.\n\n${globalSafety}` + deploymentBlock();
 
       const crossFilteringPrompt = `Act as an expert frontend JavaScript architect for Google Apps Script Web App dashboards.\n\nI want to optimise an existing dashboard with clean global state management and cross-filtering.\n\n${ctx.sharedContext}\n\nPlease implement or refactor the client-side JavaScript to include:\n1. rawData global cache.\n2. filteredData global state.\n3. filterConfig object.\n4. initDashboard() after google.script.run successfully returns data.\n5. populateFilters() using unique values from the dataset.\n6. applyFilters() as the only central filtering pipeline.\n7. updateKPIs(), updateCharts(), updateMap(), updateTable(), updateDataQualityPanel().\n8. applyTableSearch() that searches within the already-filtered subset.\n9. Chart.js lifecycle management using .destroy() before redraw.\n10. Defensive handling for missing values, blank filters, invalid dates, invalid coordinates, and empty results.\n\nUse only actual column names from the dataset. Do not invent missing columns. Provide clean, reusable JavaScript code for Index.html.`;
 
@@ -758,7 +829,9 @@
       $('outputLanguage').selectedIndex = 0;
       $('theme').selectedIndex = 0;
       $('datasetContext').value = '';
-      $('csvSample').value = '';
+      $('columnHeaders').value = '';
+      $('dataDictionary').value = '';
+      $('anonymisedSampleRows').value = '';
       $('objective').value = '';
       $('decisionQuestion').value = '';
       $('logic').value = '';
